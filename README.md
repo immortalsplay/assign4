@@ -1,3 +1,5 @@
 # assign4
 
-![image](https://github.com/immortalsplay/assign4/blob/584997dd71570c736c05e1973e2f846c8e3d963a/1.gif) 
+![image](https://github.com/immortalsplay/assign4/blob/81b19576c0df803e271384f06d45538e82ca7595/bounce.gif) 
+
+![image](https://github.com/immortalsplay/assign4/blob/81b19576c0df803e271384f06d45538e82ca7595/1.gif) 
