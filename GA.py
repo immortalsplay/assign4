@@ -2,29 +2,6 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import time
-# 随机生成10个城市
-num_cities = 1000
-cities = np.random.rand(num_cities, 2)
-data = []
-
-with open('assign1/cities.txt', 'r') as file:
-# with open('cities.txt', 'r') as file:
-    for line in file:
-        values = line.strip().split(', ')
-        if len(values) == 2:
-            data.append([float(values[0]), float(values[1])])
-
-shuffled_data = data.copy()  # 复制数据以避免修改原数组
-random.shuffle(shuffled_data)  # 随机排列
-
-cities = np.array(shuffled_data)  # 将排列后的数据赋值给 cities
-# 计算两个路径之间的距离
-def calculate_distance(route, cities):
-    distance = 0
-    for i in range(len(route) - 1):
-        distance += np.linalg.norm(cities[route[i]] - cities[route[i+1]])
-    distance += np.linalg.norm(cities[route[-1]] - cities[route[0]])
-    return distance
 
 # 使用索引表示（Index Representation）的交叉操作
 def index_crossover(parent1, parent2):
