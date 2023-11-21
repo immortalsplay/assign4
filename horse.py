@@ -6,38 +6,41 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 import matplotlib.pyplot as plt
 import math
-from horse import Horse, horse_dynamic_simulation
 
-# GRAVITY = np.array([0, 0, -9.81])  # 假定重力方向为负z轴
-
-class Cube:
+class Horse:
     def __init__(self, edge_length, total_mass, spring_constant, offset=(0, 0, 0)):
+        
         self.edge_length = edge_length
         self.mass_per_corner = total_mass / 12
         
         self.kinetic_energies = []
         self.potential_energies = []
         self.total_energies = []
-        self.GRAVITY = np.array([0, 0, 0])
+        self.GRAVITY = np.array([0, 0, -9.81])
+        offset_z = 0.2
+        offset_y = 0.0
 
-        offset_z = 0.0
         self.masses = [
-            self.Mass(self.mass_per_corner, [0, 0, 0+offset_z], 0),
-            self.Mass(self.mass_per_corner, [0, 0, edge_length+offset_z], 1),
-            self.Mass(self.mass_per_corner, [0, edge_length, 0+offset_z], 2),
-            self.Mass(self.mass_per_corner, [0, edge_length, edge_length+offset_z], 3),
-            self.Mass(self.mass_per_corner, [edge_length, 0, 0+offset_z], 4),
-            self.Mass(self.mass_per_corner, [edge_length, 0, edge_length+offset_z], 5),
-            self.Mass(self.mass_per_corner, [edge_length, edge_length, 0+offset_z], 6),
-            self.Mass(self.mass_per_corner, [edge_length, edge_length, edge_length+offset_z], 7),
-            self.Mass(self.mass_per_corner, [-edge_length, 0, 0+offset_z], 8),
-            self.Mass(self.mass_per_corner, [-edge_length, 0, edge_length+offset_z], 9),
-            self.Mass(self.mass_per_corner, [-edge_length, edge_length, 0+offset_z], 10),
-            self.Mass(self.mass_per_corner, [-edge_length, edge_length, edge_length+offset_z], 11),
-            self.Mass(self.mass_per_corner, [-2*edge_length, 0, 0+offset_z], 12),
-            self.Mass(self.mass_per_corner, [-2*edge_length, 0, edge_length+offset_z], 13),
-            self.Mass(self.mass_per_corner, [-2*edge_length, edge_length, 0+offset_z], 14),
-            self.Mass(self.mass_per_corner, [-2*edge_length, edge_length, edge_length+offset_z], 15)
+            self.Mass(self.mass_per_corner, [0, 0+offset_y, 0+offset_z], 0),
+            self.Mass(self.mass_per_corner, [0, 0+offset_y, edge_length+offset_z], 1),
+            self.Mass(self.mass_per_corner, [0, edge_length+offset_y, 0+offset_z], 2),
+            self.Mass(self.mass_per_corner, [0, edge_length+offset_y, edge_length+offset_z], 3),
+            self.Mass(self.mass_per_corner, [edge_length, 0+offset_y, 0+offset_z], 4),
+            self.Mass(self.mass_per_corner, [edge_length, 0+offset_y, edge_length+offset_z], 5),
+            self.Mass(self.mass_per_corner, [edge_length, edge_length+offset_y, 0+offset_z], 6),
+            self.Mass(self.mass_per_corner, [edge_length, edge_length+offset_y, edge_length+offset_z], 7),
+            self.Mass(self.mass_per_corner, [-edge_length, 0+offset_y, 0+offset_z], 8),
+            self.Mass(self.mass_per_corner, [-edge_length, 0+offset_y, edge_length+offset_z], 9),
+            self.Mass(self.mass_per_corner, [-edge_length, edge_length+offset_y, 0+offset_z], 10),
+            self.Mass(self.mass_per_corner, [-edge_length, edge_length+offset_y, edge_length+offset_z], 11),
+            self.Mass(self.mass_per_corner, [edge_length, 0+offset_y, -0.1+0+offset_z], 12),
+            self.Mass(self.mass_per_corner, [edge_length, 0+offset_y, -0.1+edge_length+offset_z], 13),
+            self.Mass(self.mass_per_corner, [edge_length, edge_length+offset_y, -0.1+0+offset_z], 14),
+            self.Mass(self.mass_per_corner, [edge_length, edge_length+offset_y, -0.1+edge_length+offset_z], 15),
+            self.Mass(self.mass_per_corner, [-edge_length, 0+offset_y, -0.1+0+offset_z], 16),
+            self.Mass(self.mass_per_corner, [-edge_length, 0+offset_y, -0.1+edge_length+offset_z], 17),
+            self.Mass(self.mass_per_corner, [-edge_length, edge_length+offset_y, -0.1+0+offset_z], 18),
+            self.Mass(self.mass_per_corner, [-edge_length, edge_length+offset_y, -0.1+edge_length+offset_z], 19)
         ]
         
         self.springs = []
@@ -110,24 +113,8 @@ class Cube:
             force = force_magnitude * direction
             
             return force
-
-
-def draw_cube(cube):
-    glColor3f(0, 1, 0)  # 设置颜色为绿色
-    glBegin(GL_LINES)
-    for spring in cube.springs:
-        glVertex3fv(spring.m1.position)
-        glVertex3fv(spring.m2.position)
-    glEnd()
-
-    for mass in cube.masses:
-        glPushMatrix()
-        glTranslatef(*mass.position)
-        glutSolidSphere(0.005, 10, 10)  # 小球来代表masses
-        glPopMatrix()
-
-
-def dynamic_simulation(cube,count, stop_criteria=None):
+        
+def horse_dynamic_simulation(cube,count, stop_criteria=None):
     T = 0  # 初始化时间
     DT = 0.005  # 时间步长
     k_ground = 100000  # 地面弹簧系数
@@ -193,18 +180,18 @@ def dynamic_simulation(cube,count, stop_criteria=None):
         for mass in cube.masses:
             mass.update_velocity(DT)
             mass.update_position(DT)
-            mass.velocity[0] = mass.velocity[0] + 0.0003
-            angle = (count % 10) * 2 * math.pi / 10
+            # mass.velocity[0] = mass.velocity[0] + 0.0005
+            # angle = (count % 10) * 2 * math.pi / 10
 
-            if mass.id in [4, 5]:  # 长方体的前四个质点
-                mass.position[1] = -math.sin(angle) * 0.02
-            if mass.id in [6, 7]:  # 长方体的前四个质点
-                mass.position[1] = -math.sin(angle) * 0.02 +0.1
-            if mass.id in [12, 13]:  # 长方体的后四个质点
-                mass.position[1] = math.cos(angle) * 0.05
-                # print('mass.position[1]', mass.position[1])
-            if mass.id in [14, 15]:  # 长方体的后四个质点
-                mass.position[1] = math.cos(angle) * 0.05 +0.1
+            # if mass.id in [4, 5]:  # 长方体的前四个质点
+            #     mass.position[1] = -math.sin(angle) * 0.02
+            # if mass.id in [6, 7]:  # 长方体的前四个质点
+            #     mass.position[1] = -math.sin(angle) * 0.02 +0.1
+            # if mass.id in [12, 13]:  # 长方体的后四个质点
+            #     mass.position[1] = math.cos(angle) * 0.05
+            #     # print('mass.position[1]', mass.position[1])
+            # if mass.id in [14, 15]:  # 长方体的后四个质点
+            #     mass.position[1] = math.cos(angle) * 0.05 +0.1
         
         
                 # print('mass.position[1]', mass.position[1])
@@ -237,105 +224,3 @@ def dynamic_simulation(cube,count, stop_criteria=None):
             break
 
     return cube
-
-def compute_energies(mass, velocities, heights, g=9.81):
-
-    total_energies = [0.3 * mass * g]
-    kinetic_energies = [0.5 * mass * velocities**2]
-    potential_energies = [(0.3 * mass * g) - (0.5 * mass * velocities**2)]
-    # potential_energies = [mass * g * heights]
-    # total_energies = [kinetic_energies + potential_energies]
-    
-    return kinetic_energies, potential_energies, total_energies
-
-def draw_ground():
-    glColor3f(1, 1, 1)  # 设置颜色为白色
-    gridSize = 10
-    step = 0.5
-    for x in np.arange(-gridSize, gridSize, step):
-        glBegin(GL_LINES)
-        glVertex3f(x, -gridSize, 0)
-        glVertex3f(x, gridSize, 0)
-        glEnd()
-    for y in np.arange(-gridSize, gridSize, step):
-        glBegin(GL_LINES)
-        glVertex3f(-gridSize, y, 0)
-        glVertex3f(gridSize, y, 0)
-        glEnd()
-
-
-
-# dynamic_simulation(test_cube) 
-
-def main():
-    pygame.init()
-    glutInit()
-    display = (800, 600)
-    pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
-    gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
-    glTranslatef(0.0, 0.0, -1)
-
-    gluLookAt(-0.3, 0.8, 0.3,  # 相机的位置 (eyeX, eyeY, eyeZ)
-          0, 0, 0.2,        # 相机的视点中心 (centerX, centerY, centerZ)
-          0, 0, 1)        # 相机的向上方向 (upX, upY, upZ)
- 
-    test_cube = Cube(0.1, 0.8, 500000)
-    horse = Horse(0.1, 0.8, 500000)
-    count = 0
-    for i in range(1000):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                return
-        
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
-        # dynamic_simulation(test_cube,count)
-        # draw_cube(test_cube)
-
-        horse_dynamic_simulation(horse,count)
-        draw_cube(horse)
-
-        draw_ground()
-        pygame.display.flip()
-        pygame.time.wait(10)
-        count += 1
-    # plt.figure(figsize=(10, 8))
-
-    # # 第一个子图：动能
-    # plt.subplot(2, 1, 1)  # 2行1列的布局，现在选择第一个子图
-    # plt.plot(test_cube.kinetic_energies, label="Kinetic Energy")
-    # plt.legend()
-    # plt.ylabel("Energy (Joules)")
-    # plt.title("Kinetic Energy vs Time")
-    # plt.grid(True)
-
-    # # 第二个子图：势能
-    # plt.subplot(2, 1, 2)  # 2行1列的布局，现在选择第二个子图
-    # plt.plot(test_cube.potential_energies, label="Potential Energy", color='green')
-    # y_data = np.squeeze(test_cube.total_energies)
-    # # y_data = np.squeeze(test_cube.total_energies)[:, 0]
-    # plt.plot(y_data, label="Total Energy", color='red')
-    # plt.legend()
-    # plt.xlabel("Time (arbitrary units)")
-    # plt.ylabel("Energy (Joules)")
-    # plt.title("Potential & Total Energy vs Time")
-    # plt.grid(True)
-
-    # # 显示图形
-    # plt.tight_layout()  # 调整子图的间距，使其不重叠
-    # plt.show()
-
-    # plt.plot(test_cube.kinetic_energies, label="Kinetic Energy")
-    # plt.plot(test_cube.potential_energies, label="Potential Energy")
-    # y_data = np.squeeze(test_cube.total_energies)[:, 0]
-    # plt.plot(y_data, label="Total Energy")
-    # plt.legend()
-    # plt.xlabel("Time (arbitrary units)")
-    # plt.ylabel("Energy (Joules)")
-    # plt.title("Energy vs Time")
-    # plt.grid(True)
-    # plt.show()
-
-if __name__ == "__main__":
-    main()
