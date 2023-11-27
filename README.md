@@ -2,7 +2,7 @@
 
 ## moving
 
-![image](https://github.com/immortalsplay/assign4/blob/b24b675c85784f16999bd68d0893d25811cb93bf/multi.gif) 
+![image](https://github.com/immortalsplay/assign4/blob/aa09096a37acc852a07414891e5acf0042315154/finial_v1.gif) 
 
 ![image](https://github.com/immortalsplay/assign4/blob/243201282de849b5e0f7faf3a3d7978715d0e577/different%20worm.gif) 
 ## fastest
